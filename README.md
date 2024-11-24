@@ -1,0 +1,1 @@
+# WT-JoomShopping-quiet-registration
