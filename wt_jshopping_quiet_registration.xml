@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" method="upgrade" group="jshopping">
+    <name>PLG_WT_JSHOPPING_QUIET_REGISTRATION</name>
+    <author>Andrey Smirnikov</author>
+	<creationDate>November 2024</creationDate>
+    <copyright>(c) 2024 Andrey Smirnikov</copyright>
+    <license>GNU General Public License version 3 or later</license>
+	<authorEmail>info@web-tolk.ru</authorEmail>
+	<authorUrl>https://web-tolk.ru/</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_WT_JSHOPPING_QUIET_REGISTRATION_DESC</description>
+	<scriptfile>script.php</scriptfile>
+	<namespace path="src">Joomla\Plugin\Jshopping\Wt_jshopping_quiet_registration</namespace>
+    <files>
+		<folder plugin="wt_jshopping_quiet_registration">src</folder>
+		<folder>services</folder>
+		<folder>language</folder>
+    </files>
+	<languages folder="language" client="administrator">
+		<language tag="en-GB">en-GB/plg_jshopping_wt_jshopping_quiet_registration.sys.ini</language>
+		<language tag="ru-RU">ru-RU/plg_jshopping_wt_jshopping_quiet_registration.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+				<field name="plugininfo"
+					   type="plugininfo"
+					   addfieldprefix="Joomla\Plugin\Jshopping\Wt_jshopping_quiet_registration\Fields"
+				/>
+				<field name="at_step"
+					   type="list"
+					   label="PLG_WT_JSHOPPING_QUIET_REGISTRATION_AT_STEP">
+					<option value="onConstructJshoppingControllerCheckout">onConstructJshoppingControllerCheckout</option>
+					<option value="onLoadCheckoutStep2">onLoadCheckoutStep2</option>
+					<option value="onBeforeDisplayCheckoutStep2View">onBeforeDisplayCheckoutStep2View</option>
+					<option value="onLoadCheckoutStep2save">onLoadCheckoutStep2save</option>
+					<option value="onBeforeSaveCheckoutStep2">onBeforeSaveCheckoutStep2</option>
+					<option value="onAfterSaveCheckoutStep2">onAfterSaveCheckoutStep2</option>
+					<option value="onLoadCheckoutStep3">onLoadCheckoutStep3</option>
+					<option value="onBeforeDisplayCheckoutStep3View">onBeforeDisplayCheckoutStep3View</option>
+					<option value="onBeforeSaveCheckoutStep3save">onBeforeSaveCheckoutStep3save</option>
+					<option value="onAfterSaveCheckoutStep3save">onAfterSaveCheckoutStep3save</option>
+					<option value="onLoadCheckoutStep4">onLoadCheckoutStep4</option>
+					<option value="onBeforeDisplayCheckoutStep4View">onBeforeDisplayCheckoutStep4View</option>
+					<option value="onBeforeSaveCheckoutStep4save">onBeforeSaveCheckoutStep4save</option>
+					<option value="onAfterSaveCheckoutStep4">onAfterSaveCheckoutStep4</option>
+					<option value="onLoadCheckoutStep5">onLoadCheckoutStep5</option>
+					<option value="onBeforeDisplayCheckoutStep5">onBeforeDisplayCheckoutStep5</option>
+					<option value="onBeforeDisplayCheckoutStep5View">onBeforeDisplayCheckoutStep5View</option>
+					<option value="onLoadStep5save">onLoadStep5save</option>
+					<option value="onEndCheckoutStep5">onEndCheckoutStep5</option>
+					<option value="onBeforeStep6Iframe">onBeforeStep6Iframe</option>
+					<option value="onLoadStep7">onLoadStep7</option>
+					<option value="onBeforeDisplayCheckoutFinish">onBeforeDisplayCheckoutFinish</option>
+					<option value="onAfterCreateOrderFull">onAfterCreateOrderFull</option>
+				</field>
+            </fieldset>
+        </fields>
+    </config>
+	<updateservers>
+		<server type="extension" priority="1" name="WebTolk - WT JoomShopping quiet user registration updates">https://web-tolk.ru/component/swjprojects/jupdate?element=wt_jshopping_quiet_registration</server>
+	</updateservers>
+	<changelogurl>https://web-tolk.ru/jchangelog?element=wt_jshopping_quiet_registration</changelogurl>
+</extension>
