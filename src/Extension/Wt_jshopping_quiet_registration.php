@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
@@ -35,8 +36,7 @@ class Wt_jshopping_quiet_registration extends CMSPlugin implements SubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            'onAfterSaveCheckoutStep2' => 'onAfterSaveCheckoutStep2',
-            'onLoadCheckoutStep5' => 'onLoadCheckoutStep5'
+            'onAfterSaveCheckoutStep2' => 'onAfterSaveCheckoutStep2'
         ];
     }
 
@@ -55,29 +55,21 @@ class Wt_jshopping_quiet_registration extends CMSPlugin implements SubscriberInt
         $street = $input->getString('street');
         $phone = $input->getString('phone');
 
-        // if user exists
-        if (\JSFactory::getTable('userShop')->checkUserExistAjax($username, $email) !== '1')
+        // если пользователь не зарегистрирован
+        if (\JSFactory::getTable('userShop')->checkUserExistAjax($email, $email) === '1')
         {
-            $this->getApplication()->enqueueMessage('Пользователь (имя/емейл) ' . $username  . '/' . $email . ' существует');
-        }
-        else
-        {
-            $this->getApplication()->enqueueMessage('Пользователя (имя/емейл) ' . $username  . '/' . $email . ' нужно зарегистрировать');
-
-            Factory::getLanguage()->load('com_users');
+            $this->getApplication()->getLanguage()->load('com_users');
             $model = \JSFactory::getModel('userregister', 'Site');
-            $userParams = $model->getUserParams();
-            $useractivation = $userParams->get('useractivation');
+            $comUsersParams = $model->getUserParams();
 
-            $this->getApplication()->enqueueMessage('user params: ' . print_r($userParams, true));
-            if ($userParams->get('allowUserRegistration') == 0)
+            if ($comUsersParams->get('allowUserRegistration') == 0)
             {
                 \JSError::raiseError(403, Text::_('Access Forbidden'));
                 return;
             }
 
             $data = $model->getRegistrationDefaultData();
-            $data->u_name = $username;
+            $data->u_name = $email;
             $data->f_name = $username;
             $data->email = $email;
             $data->state = $state;
@@ -105,39 +97,35 @@ class Wt_jshopping_quiet_registration extends CMSPlugin implements SubscriberInt
             }
             $model->mailSend();
 
-            // try activate user
-            $token = $model->getUserJoomla()->getProperties()['activation'];
-            $this->getApplication()->enqueueMessage('token is: ' . $token);
-            $activateModel = \JSFactory::getModel('useractivate', 'Site');
-
-            if (!$activateModel->check($token))
-            {
-                JSError::raiseError(403, $activateModel->getError());
-                return;
-            }
-
-            $return = $activateModel->activate($token);
-            $this->getApplication()->enqueueMessage('activation is ' . print_r((boolean)$return, true));
-            //
-
-            // try login user
-            $loginModel = \JSFactory::getModel('userlogin', 'Site');
-            $flag = $loginModel->login($data['username'], $password, array('remember' => false));
-            $this->getApplication()->enqueueMessage('login with ' . $data['username'] . '/' . $password . ' was ' . ($flag ? 'success' : 'failed'));
-            //
-
-            $this->getApplication()->enqueueMessage('js factory user is: ' . print_r(get_object_vars(\JSFactory::getUser()), true));
-
+            $useractivation = $comUsersParams->get('useractivation');
             $message = $model->getMessageUserRegistration($useractivation);
-            $this->getApplication()->enqueueMessage('message: ' . $message);
+            $this->getApplication()->enqueueMessage($message);
+
+            if ($useractivation < 2)
+            {
+                if ($useractivation == 1)
+                {
+                    // try activate user
+                    $token = $model->getUserJoomla()->getProperties()['activation'];
+                    $activateModel = \JSFactory::getModel('useractivate', 'Site');
+
+                    if (!$activateModel->check($token))
+                    {
+                        JSError::raiseError(403, $activateModel->getError());
+                        return;
+                    }
+
+                    $return = $activateModel->activate($token);
+                    $message = $activateModel->getMessageUserActivation($return);
+                    $this->getApplication()->enqueueMessage($message);
+                }
+
+                // try login user
+                $loginModel = \JSFactory::getModel('userlogin', 'Site');
+                // remember user
+                $loginModel->login($data['username'], $password, array('remember' => true));
+            }
         }
-
-        $this->getApplication()->enqueueMessage('onAfterSaveCheckoutStep2');
-    }
-
-    public function onLoadCheckoutStep5(Event $event)
-    {
-        $this->getApplication()->enqueueMessage('js user: ' . print_r(get_object_vars(\JSFactory::getUser()), true));
     }
 
     /**
