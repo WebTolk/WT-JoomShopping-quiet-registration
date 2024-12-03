@@ -1,8 +1,8 @@
 <?php
 /**
- * @package       WT JoomShopping quiet registration
+ * @package    WT JoomShopping quiet registration
  * @version       1.0.0
- * @Author        Andrey Smirnikov, https://web-tolk.ru
+ * @Author        Andrey Smirnikov, Sergey Tolkachyov, https://web-tolk.ru
  * @copyright     Copyright (C) 2024 Andrey Smirnikov
  * @license       GNU/GPL http://www.gnu.org/licenses/gpl-3.0.html
  * @since         1.0.0
@@ -28,17 +28,13 @@ return new class () implements ServiceProviderInterface {
             {
                 $config  = (array)PluginHelper::getPlugin('jshopping', 'wt_jshopping_quiet_registration');
                 $subject = $container->get(DispatcherInterface::class);
-
-                $app = Factory::getApplication();
-
                 /** @var \Joomla\CMS\Plugin\CMSPlugin $plugin */
                 $plugin = new Wt_jshopping_quiet_registration($subject, $config);
-                $plugin->setApplication($app);
+                $plugin->setApplication(Factory::getApplication());
 
                 return $plugin;
             }
         );
     }
-}
+};
 
-?>
